@@ -1,0 +1,27 @@
+.mpe-panzoom-viewport {
+  position: relative;
+  width: 100%;
+  height: clamp(320px, 68vh, 800px);
+  margin: 16px 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  background: var(--mpe-panzoom-background, #f6f8fa);
+  border: 1px solid var(--mpe-panzoom-border, #d0d7de);
+}
+
+.mpe-panzoom-viewport:active {
+  cursor: grabbing;
+}
+
+.mpe-panzoom-target {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain;
+  transform-origin: 0 0;
+  user-select: none;
+  -webkit-user-drag: none;
+}
