@@ -35,8 +35,8 @@ Pan and zoom support for Mermaid and SVG diagrams in Markdown Preview Enhanced.
 
 ```markdown
 @import "https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.6.2/dist/panzoom.min.js"
-@import "https://cdn.jsdelivr.net/gh/dpchan/mpe-panzoom@v1.0.0/mpe-panzoom.js"
-@import "https://cdn.jsdelivr.net/gh/dpchan/mpe-panzoom@v1.0.0/mpe-panzoom.css"
+@import "https://cdn.jsdelivr.net/gh/dpchan/mpe-panzoom@v1.0.1/mpe-panzoom.js"
+@import "https://cdn.jsdelivr.net/gh/dpchan/mpe-panzoom@v1.0.1/mpe-panzoom.css"
 ```
 
 加载顺序不能调整：适配脚本依赖第一行提供的 `window.Panzoom`。
@@ -50,8 +50,8 @@ Pan and zoom support for Mermaid and SVG diagrams in Markdown Preview Enhanced.
   onWillParseMarkdown: async function (markdown) {
     var imports = [
       '@import "https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.6.2/dist/panzoom.min.js"',
-      '@import "https://cdn.jsdelivr.net/gh/dpchan/mpe-panzoom@v1.0.0/mpe-panzoom.js"',
-      '@import "https://cdn.jsdelivr.net/gh/dpchan/mpe-panzoom@v1.0.0/mpe-panzoom.css"',
+      '@import "https://cdn.jsdelivr.net/gh/dpchan/mpe-panzoom@v1.0.1/mpe-panzoom.js"',
+      '@import "https://cdn.jsdelivr.net/gh/dpchan/mpe-panzoom@v1.0.1/mpe-panzoom.css"',
     ];
     var lines = markdown.split(/\r?\n/);
     var missingImports = imports.filter(function (line) {
