@@ -13,7 +13,7 @@ Pan and zoom support for Mermaid and SVG diagrams in Markdown Preview Enhanced.
 - 支持为内联 SVG 或图片显式添加 `mpe-panzoom` 类。
 - 鼠标滚轮缩放，缩放范围为 `0.25` 到 `10`。
 - 鼠标拖动平移，双击恢复初始位置。
-- 使用 `MutationObserver` 处理 Mermaid 延迟渲染和 MPE 实时刷新。
+- 使用 `MutationObserver` 处理 Mermaid 延迟渲染、MPE 实时更新和手动刷新。
 - 避免 MPE Lightbox 抢占 SVG 图片的点击操作。
 - Panzoom 加载失败时保留普通图表预览。
 
@@ -73,6 +73,12 @@ Pan and zoom support for Mermaid and SVG diagrams in Markdown Preview Enhanced.
 ```
 
 Import 追加在文档末尾，不会挤占 YAML Front Matter 的首行，也不会改变原始内容的行号。该转换只发生在解析期间，不会写回 Markdown 文件。
+
+## 刷新行为
+
+MPE 的实时更新和手动刷新都会重新扫描当前预览中的 Mermaid 和 SVG 图表。手动刷新替换预览 `body` 时，适配器仍会挂载到新图表；同一图表不会重复创建视口或重复绑定 Panzoom。
+
+可在浏览器中打开 [`test/manual-refresh.html`](./test/manual-refresh.html) 验证首次渲染、实时更新和手动刷新后的绑定行为。
 
 Linux 下 MPE 的默认全局配置文件通常位于：
 

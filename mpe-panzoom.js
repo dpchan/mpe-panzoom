@@ -1,28 +1,40 @@
 (function () {
   'use strict';
 
-  if (window.__mpePanzoomInstalled) {
-    return;
+  var state = window.__mpePanzoomState;
+  if (!state) {
+    state = {
+      animationFrame: 0,
+      boundTargets: new WeakSet(),
+      lightboxDocument: null,
+      observer: null,
+      observerDocument: null,
+      retryAttempts: 0,
+      retryTimer: 0,
+    };
+    window.__mpePanzoomState = state;
   }
-  window.__mpePanzoomInstalled = true;
 
-  var boundTargets = new WeakSet();
-  var animationFrame = 0;
+  var maxRetryAttempts = 100;
+  var retryDelay = 50;
 
   // This runs before MPE's deferred lightbox script, so SVG images remain
   // available for dragging instead of opening the lightbox on click.
-  document.addEventListener(
-    'click',
-    function (event) {
-      if (
-        event.target instanceof Element &&
-        event.target.closest('.mpe-panzoom-viewport img')
-      ) {
-        event.stopImmediatePropagation();
-      }
-    },
-    true,
-  );
+  if (state.lightboxDocument !== document) {
+    document.addEventListener(
+      'click',
+      function (event) {
+        if (
+          event.target instanceof Element &&
+          event.target.closest('.mpe-panzoom-viewport img')
+        ) {
+          event.stopImmediatePropagation();
+        }
+      },
+      true,
+    );
+    state.lightboxDocument = document;
+  }
 
   function isSvgImage(image) {
     try {
@@ -55,18 +67,19 @@
   }
 
   function bindPanzoom() {
-    animationFrame = 0;
+    state.animationFrame = 0;
 
     if (typeof window.Panzoom !== 'function') {
-      console.warn('[MPE Panzoom] Panzoom failed to load.');
+      retryBind();
       return;
     }
+    state.retryAttempts = 0;
 
     findTargets().forEach(function (target) {
-      if (boundTargets.has(target)) {
+      if (state.boundTargets.has(target)) {
         return;
       }
-      boundTargets.add(target);
+      state.boundTargets.add(target);
 
       var viewport = document.createElement('div');
       viewport.className = 'mpe-panzoom-viewport';
@@ -91,17 +104,37 @@
   }
 
   function scheduleBind() {
-    if (animationFrame) {
+    if (state.animationFrame) {
       return;
     }
-    animationFrame = window.requestAnimationFrame(bindPanzoom);
+    state.animationFrame = window.requestAnimationFrame(bindPanzoom);
+  }
+
+  function retryBind() {
+    if (state.retryTimer || state.retryAttempts >= maxRetryAttempts) {
+      return;
+    }
+    state.retryAttempts += 1;
+    state.retryTimer = window.setTimeout(function () {
+      state.retryTimer = 0;
+      scheduleBind();
+    }, retryDelay);
   }
 
   function start() {
-    new MutationObserver(scheduleBind).observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+    if (!state.observer || state.observerDocument !== document) {
+      if (state.observer) {
+        state.observer.disconnect();
+      }
+      // MPE manual refresh can replace body. Observing document keeps the
+      // adapter attached to the next preview tree in the same Webview.
+      state.observer = new MutationObserver(scheduleBind);
+      state.observerDocument = document;
+      state.observer.observe(document, {
+        childList: true,
+        subtree: true,
+      });
+    }
     scheduleBind();
   }
 

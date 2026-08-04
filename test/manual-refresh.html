@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>MPE Panzoom Manual Refresh Fixture</title>
+    <link rel="stylesheet" href="../mpe-panzoom.css">
+  </head>
+  <body class="preview-container">
+    <button type="button" onclick="replacePreviewContents()">Update preview</button>
+    <button type="button" onclick="replacePreviewBody()">Manual refresh</button>
+    <div id="fixture-root"></div>
+
+    <script>
+      window.Panzoom = function (target) {
+        target.dataset.panzoomBindings = String(
+          Number(target.dataset.panzoomBindings || '0') + 1,
+        );
+
+        return {
+          reset: function () {},
+          zoomWithWheel: function (event) {
+            event.preventDefault();
+          },
+        };
+      };
+
+      window.diagramMarkup = function (name) {
+        return (
+          '<div class="mermaid" data-diagram="' + name + '">' +
+          '<svg viewBox="0 0 100 40" aria-label="' + name + '">' +
+          '<text x="10" y="25">' + name + '</text>' +
+          '</svg></div>'
+        );
+      };
+
+      window.replacePreviewContents = function () {
+        document.getElementById('fixture-root').innerHTML = diagramMarkup('updated');
+      };
+
+      window.replacePreviewBody = function () {
+        var body = document.createElement('body');
+        body.className = 'preview-container';
+        body.innerHTML =
+          '<button type="button" onclick="replacePreviewContents()">Update preview</button>' +
+          '<button type="button" onclick="replacePreviewBody()">Manual refresh</button>' +
+          '<div id="fixture-root">' + diagramMarkup('manual-refresh') + '</div>';
+        document.body.replaceWith(body);
+      };
+
+      replacePreviewContents();
+    </script>
+    <script src="../mpe-panzoom.js"></script>
+  </body>
+</html>
